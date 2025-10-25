@@ -21,7 +21,7 @@ export default function LandingPage() {
     { name: "Chocolate Shake", image: "/images/chocolate.png" },
     { name: "Strawberry Shake", image: "/images/strawberry.png" },
     { name: "Mango Shake", image: "/images/mango.png" },
-    { name: "Vanilla Shake", image: "/images/vanilla.jpg" },
+    { name: "vanilla Shake", image: "/images/vanilla.png" },
     { name: "Banana Shake", image: "/images/banana.png" },
   ];
 
