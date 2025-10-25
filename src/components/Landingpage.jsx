@@ -1,19 +1,14 @@
-// LandingPage.jsx
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+"use client";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function LandingPage() {
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState("next");
+  const [direction, setDirection] = useState(1);
 
-  const backgrounds = [
-    "#795548",
-    "#E91E63",
-    "#FFB300",
-    "#F3E5AB",
-    "#FFC107",
-  ];
-
+  const backgrounds = ["#795548", "#E91E63", "#FFB300", "#F3E5AB", "#FFC107"];
   const descriptions = [
     "Rich and creamy chocolate flavor with a smooth texture.",
     "Fresh strawberry blended into a sweet, refreshing shake.",
@@ -22,170 +17,132 @@ export default function LandingPage() {
     "Healthy banana shake, energy-packed and deliciously smooth.",
   ];
 
+  const shakes = [
+    { name: "Chocolate Shake", image: "/images/chocolate.png" },
+    { name: "Strawberry Shake", image: "/images/strawberry.png" },
+    { name: "Mango Shake", image: "/images/mango.png" },
+    { name: "Vanilla Shake", image: "/images/vanilla.jpg" },
+    { name: "Banana Shake", image: "/images/banana.png" },
+  ];
+
+  const paginate = useCallback(
+    (newDirection) => {
+      setDirection(newDirection);
+      setIndex((prev) => (prev + newDirection + shakes.length) % shakes.length);
+    },
+    [shakes.length]
+  );
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Shake Showcase */}
+    <div className="flex flex-col min-h-screen text-white overflow-hidden">
       <div
-        className="flex-1 flex flex-col items-center justify-center transition-all duration-700 w-full"
+        className="flex flex-col items-center justify-center flex-1 w-full px-4 transition-all duration-500 relative"
         style={{ backgroundColor: backgrounds[index] }}
       >
-        <h2 className="text-6xl md:text-5xl sm:text-4xl font-extrabold mb-6 text-white drop-shadow-lg mt-20 text-center">
-          🍹 Fruity Shakes
-        </h2>
+        {/* Mobile Arrows */}
+        <div className="flex md:hidden w-full justify-between absolute top-1/2 transform -translate-y-1/2 px-4 z-30">
+          <button
+            onClick={() => paginate(-1)}
+            className="bg-white/20 hover:bg-white/40 text-white p-2 rounded-full transition"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={() => paginate(1)}
+            className="bg-white/20 hover:bg-white/40 text-white p-2 rounded-full transition"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
 
-        <div className="relative w-[900px] max-w-full h-[600px] md:h-[450px] sm:h-[350px] flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait" custom={direction}>
-            {/* Chocolate Shake */}
-            {index === 0 && (
-              <motion.div
-                key="chocolate"
-                className="w-full h-full flex items-center justify-center relative"
-                initial={{ x: direction === "next" ? 300 : -300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction === "next" ? -300 : 300, opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              >
-                <h1 className="absolute text-[100px] md:text-7xl sm:text-5xl font-extrabold text-black/20 z-0 text-center">
-                  Chocolate Shake
-                </h1>
-                <motion.img
-                  src="/images/chocolate.png"
-                  alt="Chocolate Shake"
-                  className="relative z-10 max-h-[550px] md:max-h-[400px] sm:max-h-[300px] object-contain drop-shadow-2xl"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
+        {/* Desktop Arrows */}
+        <button
+          onClick={() => paginate(-1)}
+          className="hidden md:flex absolute left-4 lg:left-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full z-30 transition"
+        >
+          <ChevronLeft size={28} />
+        </button>
 
-            {/* Strawberry Shake */}
-            {index === 1 && (
-              <motion.div
-                key="strawberry"
-                className="w-full h-full flex items-center justify-center relative"
-                initial={{ x: direction === "next" ? 300 : -300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction === "next" ? -300 : 300, opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              >
-                <h1 className="absolute text-[100px] md:text-7xl sm:text-5xl font-extrabold text-black/20 z-0 text-center">
-                  Strawberry Shake
-                </h1>
-                <motion.img
-                  src="/images/strawberry.png"
-                  alt="Strawberry Shake"
-                  className="relative z-10 max-h-[550px] md:max-h-[400px] sm:max-h-[300px] object-contain drop-shadow-2xl"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
+        {/* Shake Display */}
+        <div className="relative w-full max-w-[900px] h-[400px] sm:h-[500px] md:h-[620px] flex items-center justify-center overflow-hidden mt-8 md:mt-0">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={index}
+              className="absolute w-full h-full flex flex-col items-center justify-center"
+              initial={{
+                x: direction > 0 ? 100 : -100,
+                opacity: 0,
+                rotateY: direction > 0 ? -15 : 15,
+              }}
+              animate={{
+                x: 0,
+                opacity: 1,
+                rotateY: 0,
+                transition: { duration: 0.45, ease: "easeOut" },
+              }}
+              exit={{
+                x: direction > 0 ? -100 : 100,
+                opacity: 0,
+                rotateY: direction > 0 ? 10 : -10,
+                transition: { duration: 0.35, ease: "easeInOut" },
+              }}
+            >
+              {/* Background Text - Fixed for Mobile */}
+              <h1 className="absolute text-[28px] sm:text-[45px] md:text-[70px] lg:text-[100px] font-extrabold text-black/15 uppercase tracking-widest select-none z-10 text-center leading-tight sm:leading-snug px-2">
+                {shakes[index].name}
+              </h1>
 
-            {/* Mango Shake */}
-            {index === 2 && (
-              <motion.div
-                key="mango"
-                className="w-full h-full flex items-center justify-center relative"
-                initial={{ x: direction === "next" ? 300 : -300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction === "next" ? -300 : 300, opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              >
-                <h1 className="absolute text-[100px] md:text-7xl sm:text-5xl font-extrabold text-black/20 z-0 text-center">
-                  Mango Shake
-                </h1>
-                <motion.img
-                  src="/images/mango.png"
-                  alt="Mango Shake"
-                  className="relative z-10 max-h-[550px] md:max-h-[400px] sm:max-h-[300px] object-contain drop-shadow-2xl"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
-
-            {/* Vanilla Shake */}
-            {index === 3 && (
-              <motion.div
-                key="vanilla"
-                className="w-full h-full flex items-center justify-center relative"
-                initial={{ x: direction === "next" ? 300 : -300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction === "next" ? -300 : 300, opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              >
-                <h1 className="absolute text-[100px] md:text-7xl sm:text-5xl font-extrabold text-black/20 z-0 text-center">
-                  Vanilla Shake
-                </h1>
-                <motion.img
-                  src="/images/vanilla.png"
-                  alt="Vanilla Shake"
-                  className="relative z-10 max-h-[550px] md:max-h-[400px] sm:max-h-[300px] object-contain drop-shadow-2xl"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
-
-            {/* Banana Shake */}
-            {index === 4 && (
-              <motion.div
-                key="banana"
-                className="w-full h-full flex items-center justify-center relative"
-                initial={{ x: direction === "next" ? 300 : -300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction === "next" ? -300 : 300, opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              >
-                <h1 className="absolute text-[100px] md:text-7xl sm:text-5xl font-extrabold text-black/20 z-0 text-center">
-                  Banana Shake
-                </h1>
-                <motion.img
-                  src="/images/banana.png"
-                  alt="Banana Shake"
-                  className="relative z-10 max-h-[550px] md:max-h-[400px] sm:max-h-[300px] object-contain drop-shadow-2xl"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                />
-              </motion.div>
-            )}
+              {/* Shake Image */}
+              <motion.img
+                src={shakes[index].image}
+                alt={shakes[index].name}
+                className="relative z-20 w-[85%] sm:w-[75%] md:w-[65%] lg:w-[55%] object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic='none'
+                onDragEnd={(e, { offset }) => {
+                  if (offset.x < -70) paginate(1);
+                  else if (offset.x > 70) paginate(-1);
+                }}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: [1, 1.05, 1], opacity: 1 }}
+                exit={{ scale: 0.85, opacity: 0 }}
+                transition={{ duration: 0.7, ease: "easeInOut" }}
+                whileTap={{ scale: 0.97 }}
+              />
+            </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="mt-6 max-w-2xl text-center px-6 text-white font-medium text-2xl">
-          {descriptions[index]}
-        </div>
+        {/* Desktop Right Arrow */}
+        <button
+          onClick={() => paginate(1)}
+          className="hidden md:flex absolute right-4 lg:right-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full z-30 transition"
+        >
+          <ChevronRight size={28} />
+        </button>
 
-        {/* Dots Navigation */}
-        <div className="flex gap-3 mt-10">
-          {backgrounds.map((_, i) => (
+        {/* Description */}
+        <p className="mt-6 md:mt-8 max-w-2xl text-center text-white font-medium text-base sm:text-lg md:text-xl leading-relaxed px-4">
+          {descriptions[index]}
+        </p>
+
+        {/* Navigation Dots */}
+        <div className="flex gap-3 mt-6 md:mt-8 mb-8 md:mb-12">
+          {shakes.map((_, i) => (
             <button
               key={i}
               onClick={() => {
-                setDirection(i > index ? "next" : "back");
+                setDirection(i > index ? 1 : -1);
                 setIndex(i);
               }}
               className={`w-3 h-3 rounded-full transition-all ${
-                i === index
-                  ? "bg-white scale-125"
-                  : "bg-white/50 hover:bg-white/70"
+                i === index ? "bg-white scale-125" : "bg-white/50 hover:bg-white/70"
               }`}
             ></button>
           ))}
         </div>
       </div>
-
-
     </div>
   );
 }
